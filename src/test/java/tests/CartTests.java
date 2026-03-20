@@ -7,22 +7,30 @@ import org.testng.annotations.Test;
 
 public class CartTests extends BaseTest {
 
-    @Test(groups = "regression")
-    public void testAddToCart() {
+    @Test
+    public void testAddSingleItem() {
         login("standard_user", "secret_sauce");
-        driver.findElement(By.id("add-to-cart-sauce-labs-backpack")).click();
-        String badgeValue = driver.findElement(By.className("shopping_cart_badge")).getText();
-        Assert.assertEquals(badgeValue, "1", "Бројот во кошничката не е точен!");
+        addToCart("Sauce Labs Backpack");
+        String badge = driver.findElement(By.className("shopping_cart_badge")).getText();
+        Assert.assertEquals(badge, "1");
     }
 
-    @Test(groups = "regression")
+    @Test
+    public void testAddMultipleItems() {
+        login("standard_user", "secret_sauce");
+        addToCart("Sauce Labs Backpack");
+        addToCart("Sauce Labs Bike Light");
+        addToCart("Sauce Labs Bolt T-Shirt");
+        String badge = driver.findElement(By.className("shopping_cart_badge")).getText();
+        Assert.assertEquals(badge, "3");
+    }
+
+    @Test
     public void testRemoveFromCart() {
         login("standard_user", "secret_sauce");
-        driver.findElement(By.id("add-to-cart-sauce-labs-backpack")).click();
+        addToCart("Sauce Labs Backpack");
         driver.findElement(By.id("remove-sauce-labs-backpack")).click();
-
-        // Проверка дека иконата за број на продукти веќе не постои
-        int badges = driver.findElements(By.className("shopping_cart_badge")).size();
-        Assert.assertEquals(badges, 0, "Продуктот не е избришан од кошничката!");
+        int count = driver.findElements(By.className("shopping_cart_badge")).size();
+        Assert.assertEquals(count, 0, "Кошничката треба да биде празна!");
     }
 }
